@@ -55,47 +55,6 @@ void NeuralNetwork_Render(NeuralNetwork* nn){
     }
 }
 
-NeuralDataPair NeuralDataPair_Make_GSprite(char* path,int number,int item){
-    CStr ntraining_s = CStr_Format("%s/%d/%d.sprg",path,number,item);
-    GSprite sp = GSprite_Load(ntraining_s);
-    CStr_Free(&ntraining_s);
-    
-    NeuralType outs[NN_COUNT];
-    memset(outs,0,sizeof(outs));
-    outs[number] = 1.0f;
-
-    NeuralDataPair ndp = NeuralDataPair_New(sp.img,outs,sp.w * sp.h,NN_COUNT);
-    GSprite_Free(&sp);
-
-    return ndp;
-}
-NeuralDataMap NeuralDataMap_Make_GSprite(char* path){
-    NeuralDataMap ndm = NeuralDataMap_New();
-    for(int i = 0;i<10;i++){
-        for(int j = 0;j<SPRITE_COUNT;j++){
-            NeuralDataPair ndp = NeuralDataPair_Make_GSprite(path,i,epoch + j);
-            Vector_Push(&ndm,&ndp);
-        }
-    }
-    epoch += SPRITE_COUNT;
-    if(epoch + SPRITE_COUNT > SPRITE_MAX){
-        epoch = 0;
-    }
-    printf("Epoch: %d\n",epoch);
-    return ndm;
-}
-
-NeuralDataMap NeuralDataMap_Make_GSprite_R(char* path){
-    NeuralDataMap ndm = NeuralDataMap_New();
-    for(int i = 0;i<10;i++){
-        for(int j = 0;j<SPRITE_COUNT;j++){
-            NeuralDataPair ndp = NeuralDataPair_Make_GSprite(path,i,Random_u32_MinMax(0,SPRITE_MAX));
-            Vector_Push(&ndm,&ndp);
-        }
-    }
-    return ndm;
-}
-
 void Setup(AlxWindow* w){
     RGA_Set(Time_Nano());
 
