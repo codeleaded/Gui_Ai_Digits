@@ -70,11 +70,11 @@ void Setup(AlxWindow* w){
 }
 void Update(AlxWindow* w){
     if(Stroke(ALX_KEY_W).PRESSED){
-        NeuralDataMap ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TRAINING);
+        NeuralDataMap ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TRAINING,&epoch,SPRITE_COUNT,SPRITE_MAX);
         NeuralNetwork_Learn(&nnet,&ndm,NN_LEARNRATE);
         NeuralDataMap_Free(&ndm);
 
-        ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TEST);
+        ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TEST,&epoch,SPRITE_COUNT,SPRITE_MAX);
         loss = NeuralNetwork_Test_C(&nnet,&ndm);
         NeuralDataMap_Free(&ndm);
     }
@@ -82,7 +82,7 @@ void Update(AlxWindow* w){
         unsigned int ndir = Random_u32_MinMax(0,10);
         unsigned int item = Random_u32_MinMax(0,SPRITE_MAX);
 
-        NeuralDataPair ndp = NeuralDataPair_Make_GSprite(DATA_PATH SPRITE_TEST,ndir,item);
+        NeuralDataPair ndp = NeuralDataPair_Make_GSprite(DATA_PATH SPRITE_TEST,ndir,item,SPRITE_COUNT);
         loss = NeuralNetwork_Test(&nnet,&ndp);
         NeuralDataPair_Free(&ndp);
 
