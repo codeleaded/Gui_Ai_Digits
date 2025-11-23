@@ -104,7 +104,7 @@ void Update(AlxWindow* w){
             nnet = NeuralNetwork_Load(NN_PATH);
             printf("[NeuralNetwork]: Load -> Success!\n");
         }else{
-            nnet = nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
+            nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
                 NeuralLayerBuilder_Make(784,"relu"),
                 NeuralLayerBuilder_Make(16,"relu"),
                 NeuralLayerBuilder_Make(10,"softmax"),
