@@ -13,6 +13,7 @@
 #define NN_COUNT            10
 #define NN_LEARNRATE        0.1f
 
+
 int epoch = 0;
 int reality = 0;
 int prediction = 0;
@@ -58,7 +59,7 @@ void NeuralNetwork_Render(NeuralNetwork* nn){
 void Setup(AlxWindow* w){
     RGA_Set(Time_Nano());
 
-    sp = GSprite_None();
+    sp = GSprite_Null();
     font = AlxFont_MAKE_HIGH(12,24);
     
     nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
@@ -74,9 +75,9 @@ void Update(AlxWindow* w){
         NeuralNetwork_Learn(&nnet,&ndm,NN_LEARNRATE);
         NeuralDataMap_Free(&ndm);
 
-        ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TEST,&epoch,SPRITE_COUNT,SPRITE_MAX);
-        loss = NeuralNetwork_Test_C(&nnet,&ndm);
-        NeuralDataMap_Free(&ndm);
+        //ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TEST,&epoch,SPRITE_COUNT,SPRITE_MAX);
+        //loss = NeuralNetwork_Test_C(&nnet,&ndm);
+        //NeuralDataMap_Free(&ndm);
     }
     if(Stroke(ALX_KEY_S).PRESSED){
         unsigned int ndir = Random_u32_MinMax(0,10);
