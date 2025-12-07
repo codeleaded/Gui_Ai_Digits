@@ -22,7 +22,7 @@ GSprite sp;
 AlxFont font;
 NeuralNetwork nnet;
 
-void NeuralNetwork_Render(NeuralNetwork* nn){
+void NeuralNetwork_Render(unsigned int* Target,int Width,int Height,NeuralNetwork* nn){
     for(int i = 0;i<nn->layers.size;i++){
         NeuralLayer* nl = (NeuralLayer*)Vector_Get(&nn->layers,i);
         
@@ -31,24 +31,25 @@ void NeuralNetwork_Render(NeuralNetwork* nn){
             const int x = i * dx;
             const int y = j * font.CharSizeY * 3;
 
-            RenderRect(x,y,100.0f,font.CharSizeY * 2,GREEN);
+            Rect_RenderXX(Target,Width,Height,x,y,100.0f,font.CharSizeY * 2,GREEN);
             
             String str = String_Format("%f",nl->values[j]);
-            RenderCStrSizeAlxFont(&font,str.Memory,str.size,x,y,GRAY);
+            CStr_RenderSizeAlxFont(Target,Width,Height,&font,str.Memory,str.size,x,y,GRAY);
             String_Free(&str);
         
             if(nl->precount > 0){
                 str = String_Format("%f",nl->biases[j]);
-                RenderCStrSizeAlxFont(&font,str.Memory,str.size,x,y + font.CharSizeY,GRAY);
+                CStr_RenderSizeAlxFont(Target,Width,Height,&font,str.Memory,str.size,x,y + font.CharSizeY,GRAY);
                 String_Free(&str);
             }
         
             const int max = 3;
             const int count = nl->precount < max ? nl->precount : max;
+            
             for(int k = 0;k<count;k++){
                 if(nl->weights && nl->weights[j]){
                     str = String_Format("%f",nl->weights[j][k]);
-                    RenderCStrSizeAlxFont(&font,str.Memory,str.size,x - dx * 0.5f,y + k * font.CharSizeY,GRAY);
+                    CStr_RenderSizeAlxFont(Target,Width,Height,&font,str.Memory,str.size,x - dx * 0.5f,y + k * font.CharSizeY,GRAY);
                     String_Free(&str);
                 }
             }
@@ -65,25 +66,35 @@ void Setup(AlxWindow* w){
     nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
         NeuralLayerBuilder_Make(784,"relu"),
         NeuralLayerBuilder_Make(16,"relu"),
-        NeuralLayerBuilder_Make(10,"softmax"),
+        NeuralLayerBuilder_Make(NN_COUNT,"softmax"),
         NeuralLayerBuilder_End()
     });
 }
 void Update(AlxWindow* w){
-    if(Stroke(ALX_KEY_W).PRESSED){
-        NeuralDataMap ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TRAINING,&epoch,SPRITE_COUNT,SPRITE_MAX);
+    if(Stroke(ALX_KEY_Q).PRESSED){
+        NeuralNetwork_Save(&nnet,NN_PATH);
+        printf("[NeuralNetwork]: Save -> Success!\n");
+    }else if(Stroke(ALX_KEY_E).PRESSED){
+        if(Files_isFile(NN_PATH)){
+            NeuralNetwork_Free(&nnet);
+            nnet = NeuralNetwork_Load(NN_PATH);
+            printf("[NeuralNetwork]: Load -> Success!\n");
+        }else{
+            printf("[NeuralNetwork]: Load -> Failed!\n");
+        }
+    }else if(Stroke(ALX_KEY_W).PRESSED){
+        NeuralDataMap ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TRAINING,&epoch,NN_COUNT,SPRITE_COUNT,SPRITE_MAX);
         NeuralNetwork_Learn(&nnet,&ndm,NN_LEARNRATE);
         NeuralDataMap_Free(&ndm);
 
-        //ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TEST,&epoch,SPRITE_COUNT,SPRITE_MAX);
-        //loss = NeuralNetwork_Test_C(&nnet,&ndm);
-        //NeuralDataMap_Free(&ndm);
-    }
-    if(Stroke(ALX_KEY_S).PRESSED){
+        ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TEST,&epoch,NN_COUNT,SPRITE_COUNT,SPRITE_MAX);
+        loss = NeuralNetwork_Test_C(&nnet,&ndm);
+        NeuralDataMap_Free(&ndm);
+    }else if(Stroke(ALX_KEY_S).PRESSED){
         unsigned int ndir = Random_u32_MinMax(0,10);
         unsigned int item = Random_u32_MinMax(0,SPRITE_MAX);
 
-        NeuralDataPair ndp = NeuralDataPair_Make_GSprite(DATA_PATH SPRITE_TEST,ndir,item,SPRITE_COUNT);
+        NeuralDataPair ndp = NeuralDataPair_Make_GSprite(DATA_PATH SPRITE_TEST,ndir,item,NN_COUNT);
         loss = NeuralNetwork_Test(&nnet,&ndp);
         NeuralDataPair_Free(&ndp);
 
@@ -95,31 +106,12 @@ void Update(AlxWindow* w){
         sp = GSprite_Load(ntraining_s);
         CStr_Free(&ntraining_s);
     }
-    if(Stroke(ALX_KEY_Q).PRESSED){
-        NeuralNetwork_Save(&nnet,NN_PATH);
-        printf("[NeuralNetwork]: Save -> Success!\n");
-    }
-    if(Stroke(ALX_KEY_E).PRESSED){
-        NeuralNetwork_Free(&nnet);
-        if(Files_isFile(NN_PATH)){
-            nnet = NeuralNetwork_Load(NN_PATH);
-            printf("[NeuralNetwork]: Load -> Success!\n");
-        }else{
-            nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
-                NeuralLayerBuilder_Make(784,"relu"),
-                NeuralLayerBuilder_Make(16,"relu"),
-                NeuralLayerBuilder_Make(10,"softmax"),
-                NeuralLayerBuilder_End()
-            });
-            printf("[NeuralNetwork]: Load -> Failed!\n");
-        }
-    }
 
     Clear(DARK_BLUE);
 
     GSprite_Render(WINDOW_STD_ARGS,&sp,GetWidth() - sp.w - 50.0f,0.0f);
 
-    NeuralNetwork_Render(&nnet);
+    NeuralNetwork_Render(WINDOW_STD_ARGS,&nnet);
 
     //String str = String_Format("T:%d, ND:%d, I:%d",test,ndir,item);
     //RenderCStrSize(str.Memory,str.size,0.0f,0.0f,WHITE);
