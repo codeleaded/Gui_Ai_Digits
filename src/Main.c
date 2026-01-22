@@ -1,5 +1,6 @@
 #include "/home/codeleaded/System/Static/Library/WindowEngine1.0.h"
 #include "/home/codeleaded/System/Static/Library/GSprite.h"
+#include "/home/codeleaded/System/Static/Library/Plotter.h"
 #include "/home/codeleaded/System/Static/Library/NeuralNetwork.h"
 
 #define SPRITE_PATH         "/home/codeleaded/Data/NN/Digits/"
@@ -14,12 +15,16 @@
 #define NN_LEARNRATE        0.1f
 
 
+
+
+
 int epoch = 0;
 int reality = 0;
 int prediction = 0;
 NeuralType loss = 0.0f;
 GSprite sp;
 AlxFont font;
+Vector losses;
 NeuralNetwork nnet;
 
 void NeuralNetwork_Render(unsigned int* Target,int Width,int Height,NeuralNetwork* nn){
@@ -56,12 +61,20 @@ void NeuralNetwork_Render(unsigned int* Target,int Width,int Height,NeuralNetwor
         }
     }
 }
+void Fn_Custom(DataSet* ds,void* data){
+	Vector* losses = (Vector*)data;
+	for(int i = 0;i<losses->size;i++){
+		NeuralType ls = *(NeuralType*)Vector_Get(losses,i);
+        Vector_Push(&ds->points,(Vec2[]){ { i,ls } });
+	}
+}
 
 void Setup(AlxWindow* w){
     RGA_Set(Time_Nano());
 
     sp = GSprite_Null();
     font = AlxFont_MAKE_HIGH(12,24);
+    losses = Vector_New(sizeof(NeuralType));
     
     nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
         NeuralLayerBuilder_Make(784,"relu"),
@@ -90,6 +103,8 @@ void Update(AlxWindow* w){
         ndm = NeuralDataMap_Make_GSprite(DATA_PATH SPRITE_TEST,&epoch,NN_COUNT,SPRITE_COUNT,SPRITE_MAX);
         loss = NeuralNetwork_Test_C(&nnet,&ndm);
         NeuralDataMap_Free(&ndm);
+
+        Vector_Push(&losses,&loss);
     }else if(Stroke(ALX_KEY_S).PRESSED){
         unsigned int ndir = Random_u32_MinMax(0,10);
         unsigned int item = Random_u32_MinMax(0,SPRITE_MAX);
@@ -125,10 +140,19 @@ void Delete(AlxWindow* w){
     NeuralNetwork_Free(&nnet);
     GSprite_Free(&sp);
     AlxFont_Free(&font);
+
+    if(losses.size > 0){
+        Plotter p = Plotter_New((Rect){ {0.0f,0.0f},{1000.0f,1000.0f} },PLOTTER_ORIENT_UP);
+	    Plotter_AddCustom(&p,Fn_Custom,&losses,BLUE,0);
+	    Plotter_SaveImg(&p,0,"./data/Output.png",GetWidth(),GetHeight());
+	    Plotter_Free(&p);
+    }
+
+    Vector_Free(&losses);
 }
 
 int main(){
-    if(Create("RGB to G",1920,1080,1,1,Setup,Update,Delete))
+    if(Create("Ai Digits",1920,1080,1,1,Setup,Update,Delete))
         Start();
     return 0;
 }
