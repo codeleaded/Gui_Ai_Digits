@@ -1,193 +1,75 @@
-# Gui_Ai_Digits
+# Project README
 
+## Overview
+The project is a C/C++ application designed to demonstrate the use of a neural network for recognizing handwritten digits. It includes features such as training a simple neural network, visualizing the network's performance, and running on various platforms.
 
-## Project Overview
+## Features
+- Neural Network Training and Testing for Handwritten Digits
+- Visualization of Training Performance using Plotting Library
+- Cross-platform support: Linux, Windows, Wine (Windows cross-compilation), and WebAssembly
 
-This project implements specialized functionality related to ai_digits.
-
-## Core Components
-
-### Main Functionality
-- Implements core algorithms for ai_digits
-- Efficient data structures
-- Optimized performance
-- Clean code organization
-
-### Technical Features
-- C/C++ implementation
-- Dynamic memory management
-- Platform-independent design
-- Real-time capable
-
-### Architecture
-- Module separation
-- Clear interface design
-- Proper abstraction layers
-- Extensible design
-
-## Use Cases
-- Production systems
-- Educational purposes
-- Research applications
-- Performance-critical operations
-
-## Performance Characteristics
-- Optimized algorithms
-- Efficient memory usage
-- Scalable architecture
-- Minimal overhead
-
-## Implementation Quality
-- Well-organized code
-- Meaningful naming
-- Proper error handling
-- Memory management
-
-## Build and Deployment
-- Standard C/C++ compilation
-- Makefile-based building
-- Cross-platform support
-- Easy integration
-
-
-## Building the Project
+## Project Structure
+- `build/`: Compiled executable files produced by the build process.
+- `libs/`: Placeholder for library source files if needed.
+- `src/`: Source code directory containing:
+  - `Main.c`: Entry point of the application.
+  - Additional header files used in the project.
 
 ### Prerequisites
-- C/C++ Compiler (GCC, Clang, or MSVC)
+- C/C++ Compiler and Debugger (GCC, Clang)
 - Make utility
 - Standard development tools
+- Libraries required for GUI and image processing: X11 for Linux, user32, gdi32, winmm for Windows/Wine
 
-### Build Steps
+## Build & Run
+The project uses different Makefiles for building on various platforms.
 
-1. Navigate to project directory:
-```bash
-cd Gui_Ai_Digits
+### Linux
+To build on Linux:
+```sh
+cd <Project>
+make -f Makefile.linux all
 ```
 
-2. Build the project:
-```bash
-make -f Makefile.(os) all
+To run the application:
+```sh
+make -f Makefile.linux exe
 ```
 
-3. For clean rebuild:
-```bash
-make -f Makefile.(os) clean
-make -f Makefile.(os) all
+### Windows
+To build on Windows (assuming a Unix-like environment like WSL or Cygwin):
+```sh
+cd <Project>
+make -f Makefile.windows all
 ```
 
-4. If there are ./bin and ./libs directories, build libs with:
-```bash
-make -f Makefile.(os) cleanlib
-make -f Makefile.(os) lib
+To run the application:
+```sh
+make -f Makefile.windows exe
 ```
 
-### Build Options
-```bash
-make -f Makefile.(os) all         # build output
-make -f Makefile.(os) do        # build + exe output
-make -f Makefile.(os) clean   # Remove build artifacts
+### Wine
+For building and running on Wine, which is used for Windows cross-compilation:
+```sh
+cd <Project>
+make -f Makefile.wine all
 ```
 
-## Running the Project
-
-Execute the compiled binary:
-
-```bash
-./build/Main(.exe)
+To run the application:
+```sh
+make -f Makefile.wine exe
 ```
 
-Or using make:
-```bash
-make -f Makefile.(os) exe
+### WebAssembly
+For compiling to WebAssembly:
+```sh
+cd <Project>
+make -f Makefile.web all
 ```
 
-## Project Organization
-
-```
-Gui_Ai_Digits/
-├── src/
-│   ├── Main.c          # Entry point
-│   └── *.c             # Implementation files
-├── Makefile            # Build configuration
-└── README.md           # This file
+To serve and run the WebAssembly application:
+```sh
+make -f Makefile.web exe
 ```
 
-## Technical Details
-
-### Language: C/C++
-- Performance-oriented
-- Direct hardware access where needed
-- Memory efficient
-- Widely portable
-
-### Key Technologies
-- Standard C library
-- System-specific libraries as needed
-- Algorithm optimization
-- Efficient data structures
-
-### Code Quality
-- Clean, readable implementation
-- Proper error handling
-- Resource management
-- Well-documented algorithms
-
-## Development Notes
-
-### Architecture Decisions
-- Modular design for reusability
-- Efficient algorithms for performance
-- Clear separation of concerns
-- Extensible structure
-
-### Performance Optimizations
-- Algorithm efficiency
-- Memory layout optimization
-- Cache-conscious programming
-- Minimal overhead
-
-### Portability
-- Cross-platform compatible
-- Platform-specific optimizations where possible
-- Standard library usage
-- No external dependencies (where feasible)
-
-## Troubleshooting
-
-### Build Issues
-- Ensure compiler is installed
-- Check file paths and permissions
-- Verify Make installation
-- Review compiler error messages
-
-### Runtime Issues
-- Check input data validity
-- Verify file accessibility
-- Ensure sufficient memory
-- Review output format
-
-### Performance Issues
-- Check compiler optimization flags
-- Profile hot code paths
-- Review algorithm complexity
-- Consider input size
-
-## Future Improvements
-
-Potential enhancements:
-- Additional optimization opportunities
-- Extended functionality
-- Platform-specific optimizations
-- Performance profiling
-
-## References
-
-For technical background:
-- Algorithm textbooks
-- Computer science references
-- Language documentation
-- Online educational resources
-
----
-
-*Project implementing practical algorithms and data structures in C/C++*
+This setup ensures that the project can be built and executed on different platforms, providing a versatile environment for development and testing.
